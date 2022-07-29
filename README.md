@@ -21,6 +21,15 @@ It can be loaded by calling:
 ```
 
 ## Usage
+To integrate this library to your project, add the following to your `Cargo.toml`:
+
+```toml
+[dependencies]
+watchdog-device = "0.1.0"
+```
+
+A watchdog is available if the `/dev/watchdog` file is present in the system. In order to use it, the program must be executed as a user who has read/write permissions on it.
+
 All drivers support the basic mode of operation, where the watchdog activates as soon as a `Watchdog` instance is created 
 and will reboot unless the watchdog is pinged within a certain time, this time is called the timeout or margin. 
 The simplest way to ping the watchdog is to call the `keep_alive()` method.
@@ -39,7 +48,7 @@ If the userspace daemon closes the watchdog without calling `magic_close()`,
 the driver will assume that the daemon (and userspace in general) died, and will stop pinging the watchdog without disabling it first. 
 This will then cause a reboot if the watchdog is not re-opened in sufficient time.
 
-# Example
+## Example
 
 ```rust
 use watchdog_device::Watchdog;
@@ -57,6 +66,13 @@ loop{
 
 [`Linux Kernel Documentation`]: https://www.kernel.org/doc/html/latest/watchdog/watchdog-api.html
 
+## Testing
+A series of integration tests are available. 
+
+By default `cargo test` runs tests in parallel. Since they would interfere with each other, it is important to run them one at a time:
+```bash
+$ cargo test -- --test-threads=1
+```
 
 ## License
 
