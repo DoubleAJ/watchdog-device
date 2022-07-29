@@ -1,4 +1,5 @@
 # watchdog-device
+![Build](https://github.com/DoubleAJ/watchdog-device/actions/workflows/build.yml/badge.svg) 
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 Linux Watchdog API Rust implementation.
