@@ -1,0 +1,17 @@
+[package]
+name = "watchdog-device"
+version = "0.1.0"
+edition = "2021"
+authors = ["Alex Maraldi <alex.maraldi@gmail.com>"]
+license = "MIT"
+description = "Linux Watchdog API implementation."
+keywords = ["watchdog", "linux", "kernel"]
+categories = ["api-bindings", "config", "hardware-support", "os::linux-apis", "external-ffi-bindings"]
+
+[dependencies]
+libc = "0.2"
+nix = "0.24.1"
+log = "0.4.17"
+
+[dev-dependencies]
+env_logger = "0.9.0"
