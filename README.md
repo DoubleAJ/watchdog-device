@@ -1,6 +1,8 @@
 # watchdog-device
 ![Build](https://github.com/DoubleAJ/watchdog-device/actions/workflows/build.yml/badge.svg) 
+[![Crate](https://img.shields.io/crates/v/watchdog-device.svg)](https://crates.io/crates/watchdog-device)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![API](https://docs.rs/watchdog-device/badge.svg)](https://docs.rs/watchdog-device)
 
 Linux Watchdog API Rust implementation.
 
