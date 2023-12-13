@@ -202,7 +202,7 @@ pub struct Watchdog{
 }
 
 impl Watchdog {
-    /// Instantiates the watchdog.
+    /// Instantiates the default watchdog.
     /// 
     /// The creation of the instance causes the activation of the watchdog.
     /// Since this involves opening the '/dev/watchdog' file representing the driver, 
@@ -218,10 +218,20 @@ impl Watchdog {
     /// See the documentation of each method for more information.
     pub fn new() -> Result<Self, io::Error>{
         let f = OpenOptions::new().write(true).open("/dev/watchdog")?;
-        warn!("Watchdog activated.");
+        warn!("Default Watchdog activated.");
         Ok(Self{file: f, msg_sender: Option::None})
     }
 
+    /// Instantiates a specific watchdog.
+    ///
+    /// TODO write DOC here
+    pub fn new_by_id(id: u8) -> Result<Self, io::Error>{
+        let path = String::from("/dev/watchdog") + &id.to_string();
+        let f = OpenOptions::new().write(true).open(&path)?;
+        warn!("Watchdog:{path} activated.");
+        Ok(Self{file: f, msg_sender: Option::None})
+    }
+    
     /// Keeps the system alive.
     ///
     /// The watchdog automatically triggers a system reset if not pinged for a preconfigured timeout 

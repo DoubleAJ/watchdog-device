@@ -26,6 +26,16 @@ mod tests {
     }
 
     #[test]
+    fn test_open_by_id() -> Result<(), std::io::Error> {
+        init_logger();
+        let mut wd = Watchdog::new_by_id(0)?;
+        if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
+            wd.magic_close()?;
+        }
+        Ok(())
+    }
+
+    #[test]
     fn test_keep_alive() -> Result<(), std::io::Error> {
         init_logger();
         let mut wd = Watchdog::new()?;
