@@ -231,7 +231,7 @@ impl Watchdog {
         let result;
         // The following could also be achieved with: self.file.write(b"0");
         unsafe{
-            result = ioctl_keepalive(self.file.as_raw_fd(), 0 as *mut c_int);
+            result = ioctl_keepalive(self.file.as_raw_fd(), std::ptr::null_mut::<c_int>());
         }
         match result{
             Ok(_) => {
@@ -515,25 +515,20 @@ impl Watchdog {
     fn int_getter(&self, getter_type: IntGetterType) -> Result<i32, Errno> {
         #[cfg(unix)]
         let mut value: c_int = -1;
-        let result;
-        match getter_type{
+        let result = match getter_type{
             IntGetterType::GetTimeout => unsafe{
-                result = ioctl_get_timeout(self.file.as_raw_fd(),
-                                      &mut value as *mut c_int);
+                ioctl_get_timeout(self.file.as_raw_fd(), &mut value as *mut c_int)
             },
             IntGetterType::GetPreTimeout => unsafe{
-                result = ioctl_get_pretimeout(self.file.as_raw_fd(),
-                                         &mut value as *mut c_int);
+                ioctl_get_pretimeout(self.file.as_raw_fd(), &mut value as *mut c_int)
             },
             IntGetterType::GetTimeLeft => unsafe{
-                result = ioctl_get_time_left(self.file.as_raw_fd(),
-                                        &mut value as *mut c_int);
+                ioctl_get_time_left(self.file.as_raw_fd(), &mut value as *mut c_int)
             },
             IntGetterType::GetTemp => unsafe{
-                result = ioctl_get_temp(self.file.as_raw_fd(),
-                                   &mut value as *mut c_int);
+                ioctl_get_temp(self.file.as_raw_fd(), &mut value as *mut c_int)
             },
-        }
+        };
         match result{
             Ok(_) => Ok(value),
             Err(e) => Err(e),
@@ -791,12 +786,12 @@ impl Watchdog {
     /// ```
     pub fn magic_close(&mut self) -> std::io::Result<()>{
         // If the automatic keepalive thread is running, send signal to close thread...
-        if let Some(_) = self.msg_sender{
+        if self.msg_sender.is_some(){
             // Drop sender, to let the receiver understand it must exit.
             self.msg_sender = None;
         }
 
-        self.file.write(b"V")?;
+        self.file.write_all(b"V")?;
         self.file.flush()?;
         warn!("Magic close. The watchdog will NOT restart the system.");
         Ok(())

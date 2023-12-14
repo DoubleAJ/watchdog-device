@@ -10,9 +10,9 @@ keywords = ["watchdog", "linux", "kernel"]
 categories = ["api-bindings", "config", "hardware-support", "os::linux-apis", "external-ffi-bindings"]
 
 [dependencies]
-libc = "0.2"
-nix = "0.24.1"
-log = "0.4.17"
+libc = "0.2.151"
+nix = { version = "0.27.1", features = ["ioctl"]}
+log = "0.4.20"
 
 [dev-dependencies]
-env_logger = "0.9.0"
+env_logger = "0.10.1"

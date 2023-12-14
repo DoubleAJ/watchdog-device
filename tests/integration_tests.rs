@@ -49,7 +49,7 @@ mod tests {
         if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
             wd.magic_close()?;
         }
-        assert_eq!(result.is_err(), false);
+        assert!(result.is_ok());
         Ok(())
     }
 
@@ -82,7 +82,7 @@ mod tests {
         if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
             wd.magic_close()?;
         }
-        assert_eq!(result.is_err(), false);
+        assert!(result.is_ok());
         Ok(())
     }
 
@@ -120,7 +120,7 @@ mod tests {
         if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
             wd.magic_close()?;
         }
-        assert_eq!(test_error, false);
+        assert!(!test_error);
         Ok(())
     }
 
@@ -138,7 +138,7 @@ mod tests {
         if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
             wd.magic_close()?;
         }
-        assert_eq!(result.is_err(), false);
+        assert!(result.is_ok());
         Ok(())
     }
 
@@ -156,7 +156,7 @@ mod tests {
         if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
             wd.magic_close()?;
         }
-        assert_eq!(result.is_err(), false);
+        assert!(result.is_ok());
         Ok(())
     }
 
@@ -276,7 +276,7 @@ mod tests {
         if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
             wd.magic_close()?;
         }
-        assert_eq!(test_error, false);
+        assert!(!test_error);
         Ok(())
     }
 
@@ -310,7 +310,7 @@ mod tests {
         if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
             wd.magic_close()?;
         }
-        assert_eq!(test_error, false);
+        assert!(!test_error);
         Ok(())
     }
 
@@ -365,7 +365,7 @@ mod tests {
         if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
             wd.magic_close()?;
         }
-        assert_eq!(test_error, false);
+        assert!(!test_error);
         Ok(())
     }
 
@@ -420,7 +420,7 @@ mod tests {
         if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
             wd.magic_close()?;
         }
-        assert_eq!(test_error, false);
+        assert!(!test_error);
         Ok(())
     }
 
@@ -452,7 +452,7 @@ mod tests {
         if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
             wd.magic_close()?;
         }
-        assert_eq!(test_error, false);
+        assert!(!test_error);
         Ok(())
     }
 
@@ -470,7 +470,7 @@ mod tests {
                 error!("error:{}", errno);
             },
         }
-        assert_eq!(result.is_err(), false);
+        assert!(result.is_ok());
         //wd.magic_close()?; // No magic close, in order to verify if the watchdog is actually disabled.
         trace!("Test over. The watchdog is disabled, so the system shouldn't reset.");
         Ok(())
@@ -490,7 +490,7 @@ mod tests {
                 error!("error:{}", errno);
             },
         }
-        assert_eq!(result.is_err(), false);
+        assert!(result.is_ok());
         if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
             wd.magic_close()?;
         }
@@ -553,7 +553,7 @@ mod tests {
         init_logger();
         let mut wd1 = Watchdog::new()?;
         let res = Watchdog::new();
-        assert_eq!(res.is_err(), true); // Should fail
+        assert!(res.is_err()); // Should fail
         if wd1.is_option_supported(&OptionFlags::MagicClose).unwrap(){
             wd1.magic_close()?;
         }
