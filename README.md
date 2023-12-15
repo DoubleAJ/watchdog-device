@@ -28,10 +28,14 @@ To integrate this library to your project, add the following to your `Cargo.toml
 
 ```toml
 [dependencies]
-watchdog-device = "0.1.0"
+watchdog-device = "0.2.0"
 ```
 
-A watchdog is available if the `/dev/watchdog` file is present in the system. In order to use it, the program must be executed as a user who has read/write permissions on it.
+A watchdog is available if any `/dev/watchdog*` file is present in the system. In order to use it, the program must be executed as a user who has read/write permissions on it.
+
+It is possible to have more that one Watchdog. In addition to `/dev/watchdog`, there could be other files named with a numerical suffix (e.g.: `/dev/watchdog0` , `/dev/watchdog1`, etc.).
+The function `Watchdog::new()` allows the activation of the default watchdog (represented by the file with no suffix).
+The function `Watchdog::new_by_id()` allows the activation of a specific watchdog (represented by a file with a suffix) by indicating the numerical ID as parameter.
 
 All drivers support the basic mode of operation, where the watchdog activates as soon as a `Watchdog` instance is created 
 and will reboot unless the watchdog is pinged within a certain time, this time is called the timeout or margin. 

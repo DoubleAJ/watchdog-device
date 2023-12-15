@@ -29,9 +29,9 @@ const IDENTITY_STR_LEN: usize = 32;
 ///  - include/uapi/linux/watchdog.h :
 /// ```text
 /// struct watchdog_info {
-/// 	__u32 options;		/* Options the card/driver supports */
-/// 	__u32 firmware_version;	/* Firmware version of the card */
-/// 	__u8  identity[32];	/* Identity of the board */
+///     __u32 options;  /* Options the card/driver supports */
+///     __u32 firmware_version; /* Firmware version of the card */
+///     __u8  identity[32]; /* Identity of the board */
 /// };
 /// ```
 #[repr(C)] // see https://docs.rust-embedded.org/book/c-tips/index.html#packed-and-aligned-types
