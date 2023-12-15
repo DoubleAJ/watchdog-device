@@ -26,6 +26,27 @@ mod tests {
     }
 
     #[test]
+    fn test_open_by_id() -> Result<(), std::io::Error> {
+        init_logger();
+        // Tries to open the first N IDs for /dev/watchdog[0,N[
+        // Note that the test does NOT FAIL if it is not capable of opening any,
+        // because it could simply mean that there are no watchdogs present with those particular
+        // IDs. The machine could simply have one and only default watchdog with no ID
+        // (/dev/watchdog).
+        for id in 0..15{
+            match Watchdog::new_by_id(id){
+                Ok(mut wd) => {
+                    if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
+                        wd.magic_close()?;
+                    }
+                }
+                Err(e) => info!("Could not open /dev/watchdog{} possibly just because it is not present. error:{}", id, e)
+            }
+        }
+        Ok(())
+    }
+
+    #[test]
     fn test_keep_alive() -> Result<(), std::io::Error> {
         init_logger();
         let mut wd = Watchdog::new()?;
@@ -548,6 +569,28 @@ mod tests {
         Ok(())
     }
 
+    // This test is disabled because it is used to verify that the system actually resets 
+    // when no keepalives are sent.
+    #[test]
+    #[ignore]
+    fn test_triggered_watchdog() -> Result<(), std::io::Error> {
+        init_logger();
+        let wd = Watchdog::new()?;
+
+        // No keepalives: the watchdog should be triggered, the system should restart!
+
+        let mut wait_duration: u64 = 45; // By default the test will try to wait longer than a theoretical timeout delay.
+        if let Ok(timeout) = wd.get_timeout(){
+            wait_duration = (timeout * 2) as u64;
+        }
+        info!("Sleeping for {} secs to ensure that the watchdog will restart the system...", wait_duration);
+        sleep(Duration::from_secs(wait_duration));
+        
+        // No Magic Close; the system should reset!
+        // wd.magic_close()?;
+        Ok(())
+    }
+
     #[test]
     fn test_multiple_instances() -> Result<(), std::io::Error> {
         init_logger();
@@ -579,4 +622,51 @@ mod tests {
         Ok(())
     }
 
+    // Only activate this test if the first two watchdogs are available
+    // i.e. / dev/watchdog and /dev/watchdog0
+    #[test]
+    #[ignore]
+    fn test_multiple_watchdogs() -> Result<(), std::io::Error> {
+        // Test opening two watchdogs at the same time.
+        init_logger();
+        let mut wd = Watchdog::new()?;
+        let mut wd0 = Watchdog::new_by_id(0)?;
+
+        let timeout_wd = wd.get_timeout().unwrap();
+        let timeout_wd0 = wd0.get_timeout().unwrap();
+        let mut result_wd;
+        let mut result_wd0;
+        // Tries to send one keep alive per second for twice the duration of the timeout,
+        // in order to verify that no reset is triggered.
+        info!("Timeouts are respectively {} and {} seconds, so keep alive signals will be sent 
+               once every second for twice as long as the higher between the two:{}.", 
+              timeout_wd, timeout_wd0, std::cmp::max(timeout_wd, timeout_wd0));
+        for counter in 0..(2 * std::cmp::max(timeout_wd, timeout_wd0)){ 
+            result_wd = wd.keep_alive();
+            result_wd0 = wd0.keep_alive();
+            match result_wd{
+                Ok(_) => info!("Watchdog keep alive #{} sent.", counter),
+                Err(e) => {
+                    error!("Watchdog keep alive #{} failed with error:{}", counter, e);
+                    break;
+                }
+            }    
+            match result_wd0{
+                Ok(_) => info!("Watchdog0 keep alive #{} sent.", counter),
+                Err(e) => {
+                    error!("Watchdog0 keep alive #{} failed with error:{}", counter, e);
+                    break;
+                }
+            }    
+            sleep(Duration::from_secs(1));
+        }
+
+        if wd.is_option_supported(&OptionFlags::MagicClose).unwrap(){
+            wd.magic_close()?;
+        }
+        if wd0.is_option_supported(&OptionFlags::MagicClose).unwrap(){
+            wd0.magic_close()?;
+        }
+        Ok(())
+    }
 }

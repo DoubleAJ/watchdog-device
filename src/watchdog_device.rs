@@ -202,7 +202,7 @@ pub struct Watchdog{
 }
 
 impl Watchdog {
-    /// Instantiates the watchdog.
+    /// Instantiates the default watchdog.
     /// 
     /// The creation of the instance causes the activation of the watchdog.
     /// Since this involves opening the '/dev/watchdog' file representing the driver, 
@@ -217,8 +217,27 @@ impl Watchdog {
     /// [`start_automatic_keep_alive()`](Self::start_automatic_keep_alive) just once.
     /// See the documentation of each method for more information.
     pub fn new() -> Result<Self, io::Error>{
-        let f = OpenOptions::new().write(true).open("/dev/watchdog")?;
-        warn!("Watchdog activated.");
+        Self::new_instance(None)
+    }
+
+    /// Instantiates a specific watchdog with a numeric identifier.
+    ///
+    /// Unlike [`new()`](Self::new), it creates a watchdog instance by opening the
+    /// '/dev/watchdogID' file (e.g. '/dev/watchdog0', '/dev/watchdog37', etc.).
+    /// The ID passed as parameter indicates the number suffix of the watchdog file.
+    /// As with [`new()`](Self::new), The creation of the instance causes the activation of the watchdog.
+    /// See [`new()`](Self::new) for more information.
+    pub fn new_by_id(id: u8) -> Result<Self, io::Error>{
+        Self::new_instance(Some(id))
+    }
+    
+    fn new_instance(id: Option<u8>) -> Result<Self, io::Error>{
+        let mut path = String::from("/dev/watchdog");
+        if let Some(id_val) = id {
+            path.push_str(&id_val.to_string());
+        }
+        let f = OpenOptions::new().write(true).open(&path)?;
+        warn!("Watchdog:{path} activated.");
         Ok(Self{file: f, msg_sender: Option::None})
     }
 
